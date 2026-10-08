@@ -1,0 +1,54 @@
+# .github/effortgate.yml
+# Every key is optional. Unknown keys are rejected so typos surface.
+mode: dry-run            # start here for a week, read the job summaries, then switch to enforce
+
+trusted:
+  users: []              # logins that are never gated
+  bots: true
+  associations: [OWNER, MEMBER, COLLABORATOR]
+  min_merged_prs: 3      # contributors with this many merged PRs here are trusted
+
+trivial:                 # trivial PRs skip the linked-issue, tests and size checks
+  max_changed_lines: 10
+  paths: ["**/*.md", "docs/**", ".github/**"]
+
+pull_requests:
+  linked_issue:
+    enabled: true
+    required: true
+    required_label: approved   # maintainers label issues they want fixed
+  template:
+    min_chars: 20              # per section, after removing template text
+  tests:
+    source: ["src/**"]
+    tests: ["test/**", "**/*.test.*"]
+  size:
+    first_time_max_lines: 400
+  mass_pr:
+    window_days: 7
+    max_repos: 15
+  paths:
+    - match: ["src/core/**"]
+      require_tests: true
+      first_time_max_lines: 150
+
+issues:
+  bug_report:
+    labels: [bug]
+
+thresholds:
+  pass: 70
+  needs_info: 40
+
+actions:
+  needs_info:
+    labels: ["effortgate:needs-info"]
+    close_after_days: 14
+  low_effort:
+    labels: ["effortgate:low-effort"]
+    draft: true
+    close_after_days: 7
+
+tone:
+  greeting: "Thanks for opening this, @{author}."
+  footer: "Questions about these checks? Ask in a reply and a maintainer will look."

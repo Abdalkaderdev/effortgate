@@ -1,0 +1,19 @@
+# Optional: re-evaluate once CI finishes, so the "CI passing" check reflects the result.
+name: effortgate after CI
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: Abdalkaderdev/effortgate@v0
