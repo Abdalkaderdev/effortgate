@@ -1,0 +1,42 @@
+name: effortgate
+description: Gate pull requests and issues on effort and evidence, against a policy the maintainer controls.
+author: Abdalkader Alhamoud
+branding:
+  icon: filter
+  color: gray-dark
+
+inputs:
+  github-token:
+    description: Token used to read the repository and, in enforce mode, to label, comment, convert to draft and close. The default GITHUB_TOKEN is enough.
+    required: false
+    default: ${{ github.token }}
+  policy:
+    description: Path to the policy file, read from the default branch (never from the pull request).
+    required: false
+    default: .github/effortgate.yml
+  mode:
+    description: "Override the policy's mode: dry-run (report only, no writes) or enforce. Empty uses the policy, which defaults to dry-run."
+    required: false
+    default: ""
+  anthropic-api-key:
+    description: Anthropic API key for the optional LLM review (llm.provider anthropic). Only used when llm.enabled is true.
+    required: false
+    default: ""
+  openai-api-key:
+    description: OpenAI API key for the optional LLM review (llm.provider openai). Only used when llm.enabled is true.
+    required: false
+    default: ""
+
+outputs:
+  outcome:
+    description: "Outcome for a single evaluated item: trusted, pass, needs_info or low_effort."
+  score:
+    description: Effort score from 0 to 100 for a single evaluated item.
+  checks:
+    description: JSON array of check results for a single evaluated item.
+  results:
+    description: JSON array of {number, outcome, score, actions} for every item evaluated in this run.
+
+runs:
+  using: node24
+  main: dist/index.js
